@@ -1,7 +1,7 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextRequest, NextResponse } from 'next/server';
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: NextRequest) {
   const { messages, topicContext, summaryContext } = await req.json();
@@ -17,24 +17,30 @@ Tu rol es:
 - Dar ejemplos clínicos concretos cuando sea útil
 - Reforzar el aprendizaje con preguntas al final de tus respuestas cuando sea pertinente
 - Ser conciso pero completo
-- Responder siempre en español
+- Responder siempre en español`;
 
-Si te hacen preguntas fuera del tema, podés responderlas pero reorientá hacia el tema principal.`;
-
-  const stream = await client.messages.stream({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 1500,
-    system: systemPrompt,
-    messages,
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    systemInstruction: systemPrompt,
   });
+
+  // Convert messages to Gemini format
+  const history = messages.slice(0, -1).map((m: { role: string; content: string }) => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }],
+  }));
+
+  const lastMessage = messages[messages.length - 1];
+
+  const chat = model.startChat({ history });
+  const result = await chat.sendMessageStream(lastMessage.content);
 
   const encoder = new TextEncoder();
   const readable = new ReadableStream({
     async start(controller) {
-      for await (const chunk of stream) {
-        if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
-          controller.enqueue(encoder.encode(chunk.delta.text));
-        }
+      for await (const chunk of result.stream) {
+        const text = chunk.text();
+        if (text) controller.enqueue(encoder.encode(text));
       }
       controller.close();
     },
