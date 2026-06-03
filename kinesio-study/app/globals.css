@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: #0f1117;
+  color: #dde3f0;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: #161a24; }
+::-webkit-scrollbar-thumb { background: #2a3045; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #4f8ef7; }
+
+.prose-study { line-height: 1.8; }
+.prose-study h1, .prose-study h2, .prose-study h3 { font-family: var(--font-display); color: #dde3f0; margin: 1.2em 0 0.5em; }
+.prose-study p { color: #8892a4; margin-bottom: 0.9em; }
+.prose-study strong { color: #dde3f0; }
+.prose-study ul, .prose-study ol { color: #8892a4; padding-left: 1.5em; margin-bottom: 0.9em; }
+.prose-study li { margin-bottom: 0.3em; }
+.prose-study code { font-family: var(--font-mono); background: #1e2333; color: #2dd4bf; padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.88em; }
+.prose-study blockquote { border-left: 3px solid #4f8ef7; padding-left: 1em; color: #5a6480; font-style: italic; margin: 1em 0; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulseSoft { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.animate-fade-in { animation: fadeIn 0.3s ease forwards; }
+.animate-slide-up { animation: slideUp 0.3s ease forwards; }
+.animate-pulse-soft { animation: pulseSoft 2s ease-in-out infinite; }
+.animate-spin { animation: spin 0.8s linear infinite; }
